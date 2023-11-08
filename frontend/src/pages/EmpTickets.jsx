@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getTickets, reset } from "../features/tickets/ticketSlice";
+import { getEmpTickets, reset } from "../features/tickets/ticketSlice";
 import Spinner from "../components/Spinner";
 import BackButton from "../components/BackButton";
-import { TicketItem } from '../components/TicketItem'
+import {EmpTicketItem} from '../components/TicketItem'
 
-function Tickets() {
-  const { tickets, isLoading, isSuccess ,status} = useSelector(
+function EmpTickets() {
+  const { tickets, isLoading, isSuccess } = useSelector(
     (state) => state.tickets
   );
 
@@ -21,13 +21,13 @@ function Tickets() {
   }, [dispatch, isSuccess]);
 
   useEffect(() => {
-    dispatch(getTickets());
-  }, [dispatch,status]);
+    dispatch(getEmpTickets());// getting all the tickets of the employee
+  }, [dispatch,isSuccess]);
 
   if (isLoading) {
     return <Spinner />;
   }
-
+// console.log(tickets);
   return (
     <>
     <BackButton url='/' />
@@ -40,11 +40,11 @@ function Tickets() {
             <div></div>
         </div>
         {tickets.map((ticket) => (
-            <TicketItem key={ticket._id} ticket={ticket} />
+            <EmpTicketItem key={ticket._id} ticket={ticket} />
         ))}
       </div>
     </>
   );
 }
 
-export default Tickets;
+export default EmpTickets;

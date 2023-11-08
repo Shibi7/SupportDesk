@@ -48,6 +48,44 @@ export const createNote = createAsyncThunk(
     }
   }
 );
+export const getEmpNotes = createAsyncThunk(
+  "emp/notes/getAll",
+  async (ticketId, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().employee.emp.token;
+      return await noteService.getEmpNotes(ticketId, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Create ticket note
+export const createEmpNote = createAsyncThunk(
+  "emp/notes/create",
+  async ({ noteText, ticketId }, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().employee.emp.token;
+      return await noteService.createEmpNote(noteText, ticketId, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 export const noteSlice = createSlice({
   name: "note",
@@ -79,6 +117,32 @@ export const noteSlice = createSlice({
         state.notes.push(action.payload);
       })
       .addCase(createNote.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(getEmpNotes.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getEmpNotes.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.notes = action.payload;
+      })
+      .addCase(getEmpNotes.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(createEmpNote.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(createEmpNote.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.notes.push(action.payload);
+      })
+      .addCase(createEmpNote.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

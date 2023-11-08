@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 
 function TicketItem({ ticket }) {
+  // console.log(ticket);
   return (
     <div className="ticket">
       <div>{new Date(ticket.createdAt).toLocaleString("en-US")}</div>
-      <div>{ticket.product}</div>
+      <div>{ticket.product.phone || ticket.product.Laptop || ticket.product.TV }</div>
       <div className={`status status-${ticket.status}`}>{ticket.status}</div>
       <Link to={`/ticket/${ticket._id}`} className="btn btn-reverse btn-sm">
         View
@@ -13,4 +14,18 @@ function TicketItem({ ticket }) {
   );
 }
 
-export default TicketItem;
+function EmpTicketItem({ ticket }) {
+  return (
+    <div className="ticket">
+      <div>{new Date(ticket.createdAt).toLocaleString("en-US")}</div>
+      {/* <div>{ticket.user.name}</div> */}
+      <div>{ticket.product.phone || ticket.product.Laptop || ticket.product.TV}</div>
+      <div className={`status status-${ticket.status}`}>{ticket.status}</div>
+      <Link to={`/emp/ticket/${ticket._id}`} className="btn btn-reverse btn-sm">
+        View
+      </Link>
+    </div>
+  );
+}
+
+export { EmpTicketItem, TicketItem};

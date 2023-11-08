@@ -4,16 +4,18 @@ import { toast } from "react-toastify";
 import Modal from "react-modal";
 import { FaPlus } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
-import { getTicket, closeTicket } from "../features/tickets/ticketSlice";
+import { getEmpTicket,closeEmpTicket,openEmpTicket } from "../features/tickets/ticketSlice";
 import {
-  getNotes,
-  createNote,
+  createEmpNote,
+  getEmpNotes,
   reset as notesReset,
 } from "../features/notes/noteSlice";
 import { useParams, useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton";
 import Spinner from "../components/Spinner";
 import NoteItem from "../components/NoteItem";
+
+// openEmpTicket
 
 const customStyles = {
   content: {
@@ -30,12 +32,14 @@ const customStyles = {
 
 Modal.setAppElement("#root");
 
-function Ticket() {
+function EmpTicket() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [noteText, setNoteText] = useState("");
-  const { ticket, isLoading, isError, message } = useSelector(
+  // const [stat,setStat] = useState("new");
+  const { ticket, isLoading, isError, message,status } = useSelector(
     (state) => state.tickets
   );
+
   const { notes, isLoading: notesIsLoading } = useSelector(
     (state) => state.notes
   );
@@ -49,21 +53,25 @@ function Ticket() {
     if (isError) {
       toast.error(message);
     }
-    
-    dispatch(getTicket(ticketId));
-    dispatch(getNotes(ticketId));
-  }, [isError, message, ticketId, dispatch,ticket.status]);
 
-  // const onTicketClose = () => {
-  //   dispatch(closeTicket(ticketId));
-  //   toast.success("Ticket Closed");
-  //   navigate("/tickets");
-  // };
+    dispatch(getEmpTicket(ticketId));
+    dispatch(getEmpNotes(ticketId));
+  }, [isError, message, ticketId, dispatch,status]);
+
+  const onTicketClose = () => {
+    dispatch(closeEmpTicket(ticketId,"closed"));
+    toast.success("Ticket Closed");
+    navigate("/emp/tickets");
+  };
+  const openTicket = () => {
+    dispatch(openEmpTicket(ticketId,"open"));
+    toast.success("Ticket opened");
+  };
 
   // Create note submit
   const onNoteSubmit = (e) => {
     e.preventDefault();
-    dispatch(createNote({ noteText, ticketId }));
+    dispatch(createEmpNote({ noteText, ticketId }));
     closeModal();
   };
 
@@ -87,22 +95,29 @@ function Ticket() {
       break; 
     }
   }
-  // console.log(notes);
+  console.log(notes);
+
 
   return (
     <div className="ticket-page">
       <header className="ticket-header">
-        <BackButton url="/tickets" />
+        <BackButton url="/emp/tickets" />
         <h2>
-          Ticket ID: {ticket._id}
+           Ticket ID: {ticket._id}
           <span className={`status status-${ticket.status}`}>
             {ticket.status}
           </span>
         </h2>
+        {ticket.status !== "closed" && (
+        <button onClick={openTicket} className="btn">
+          Open the ticket
+        </button>
+      )}
+
         <h3>
           Date Submitted: {new Date(ticket.createdAt).toLocaleString("en-US")}
         </h3>
-          <h2>{productType}</h2>
+        <h2>{productType}</h2>
           {productType ==="phone"  && <h3>Product: { ticket.product.phone}</h3>}
           {productType ==="Laptop" && <h3>Product: { ticket.product.Laptop}</h3>}
           {productType ==="TV" && <h3>Product: { ticket.product.TV}</h3>}
@@ -153,13 +168,13 @@ function Ticket() {
         <NoteItem key={note._id} note={note} />
       ))}
 
-      {/* {ticket.status !== "closed" && emp && (
-        <button className="btn btn-block btn-danger" disabled>
+      {ticket.status !== "closed" && (
+        <button onClick={onTicketClose} className="btn btn-block btn-danger">
           Close Ticket
         </button>
-      )} */}
+      )}
     </div>
-      );
+  );
 }
 
-export default Ticket;
+export default EmpTicket;

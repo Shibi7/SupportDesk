@@ -7,6 +7,7 @@ const initialState = {
   isError: false,
   isSuccess: false,
   isLoading: false,
+  status:false,
   message: "",
 };
 
@@ -50,6 +51,44 @@ export const getTickets = createAsyncThunk(
   }
 );
 
+// Get all the of the employee branch tickets
+export const getEmpTickets = createAsyncThunk(
+  "tickets/emp/getAll",
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().employee.emp.token;
+      return await ticketService.getEmpTickets(token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const getEmpTicket = createAsyncThunk(
+  "tickets/emp/get",
+  async (ticketId, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().employee.emp.token;
+      return await ticketService.getEmpTicket(ticketId,token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 // Get user ticket
 export const getTicket = createAsyncThunk(
   "tickets/get",
@@ -71,12 +110,30 @@ export const getTicket = createAsyncThunk(
 );
 
 // Close ticket
-export const closeTicket = createAsyncThunk(
-  "tickets/close",
-  async (ticketId, thunkAPI) => {
+export const closeEmpTicket = createAsyncThunk(
+  "tickets/emp/close",
+  async (ticketId,thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await ticketService.closeTicket(ticketId, token);
+      const token = thunkAPI.getState().employee.emp.token;
+      return await ticketService.closeEmpTicket(ticketId, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const openEmpTicket = createAsyncThunk(
+  "tickets/emp/open",
+  async (ticketId,thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().employee.emp.token;
+      return await ticketService.openEmpTicket(ticketId, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -123,6 +180,19 @@ export const ticketSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
+      .addCase(getEmpTickets.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getEmpTickets.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.tickets = action.payload;
+      })
+      .addCase(getEmpTickets.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
       .addCase(getTicket.pending, (state) => {
         state.isLoading = true;
       })
@@ -136,11 +206,40 @@ export const ticketSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(closeTicket.fulfilled, (state, action) => {
+      .addCase(getEmpTicket.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getEmpTicket.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isSuccess = true;
+        state.ticket = action.payload;
+      })
+      .addCase(getEmpTicket.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(closeEmpTicket.pending, (state, action) => {
+        state.status = false;
+      })
+      .addCase(closeEmpTicket.fulfilled, (state, action) => {
+        state.isLoading = true;
+        state.status=false;
         state.tickets.map((ticket) =>
           ticket._id === action.payload._id
             ? (ticket.status = "closed")
+            : ticket
+        );
+      })
+      .addCase(openEmpTicket.pending, (state, action) => {
+        state.status = false;
+      })
+      .addCase(openEmpTicket.fulfilled, (state, action) => {
+        state.status=true;
+        state.isLoading = false;
+        state.tickets.map((ticket) =>
+          ticket._id === action.payload._id
+            ? (ticket.status = "open")
             : ticket
         );
       });

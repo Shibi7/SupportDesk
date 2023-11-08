@@ -1,5 +1,21 @@
 const mongoose = require("mongoose");
 
+const deviceSchema = mongoose.Schema(
+  {
+    phone:{
+      type: String,
+      enum: ['iPhone', 'Macbook Pro', 'iMac', 'iPad'],
+    },
+    Laptop:{
+      type: String,
+      enum: ["MV3","VFPro","JGuI","KO78"],
+    },
+    TV:{
+      type: String,
+      enum: ["HD70","Dolby55","Vison40","Meta50"],
+    }
+  }
+)
 const ticketSchema = mongoose.Schema(
   {
     user: {
@@ -8,9 +24,8 @@ const ticketSchema = mongoose.Schema(
       ref: 'User',
     },
     product: {
-      type: String,
-      required: [true, "Please select a product"],
-      enum: ['iPhone', 'Macbook Pro', 'iMac', 'iPad'],
+      type: deviceSchema,
+      required: [true, "Please select a product please"]
     },
     description: {
       type: String,

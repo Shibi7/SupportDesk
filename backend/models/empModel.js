@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const { randomUUID } = require("crypto");
 
-const userSchema = mongoose.Schema(
+const empSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -15,15 +16,19 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add an password"],
     },
-    isAdmin: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },    
+    staffId:{
+        type:String,
+        default : randomUUID(),
+    },
+    department:{
+        type:String,
+        required:true,
+        enum:['phone','Laptop','TV'],
+    }
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Emp", empSchema);

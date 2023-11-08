@@ -6,15 +6,26 @@ const {
   createTicket,
   deleteTicket,
   updateTicket,
+  getAllTickets,
+  getEmpTicket
 } = require("../controllers/ticketController");
 
-const { protect } = require("../middleware/authMiddleware");
+const { protect,protectEmp } = require("../middleware/authMiddleware");
 
 // Re-route into note route
 const noteRouter = require("./noteRoutes");
 router.use("/:ticketId/notes", noteRouter);
 
+router.use("/emp/:ticketId/notes", noteRouter);
+
+//user
 router.route("/").get(protect, getTickets).post(protect, createTicket);
+//employee
+router.route("/emp").get(protectEmp, getAllTickets)
+
+router.route("/emp/:ticketId").put(protectEmp, updateTicket);
+
+router.route("/emp/:id").get(protectEmp, getEmpTicket)
 
 router
   .route("/:id")

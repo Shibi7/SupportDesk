@@ -7,16 +7,17 @@ import Spinner from '../components/Spinner'
 import BackButton from "../components/BackButton";
 
 function NewTicket() {
+  const initialdata = {
+    "phone":"iphone",
+  }
   const { user } = useSelector((state) => state.auth);
   const {isLoading, isSuccess, isError, message} = useSelector((state) => state.tickets)
 
   const [name] = useState(user.name);
   const [email] = useState(user.email);
-  const [product, setProduct] = useState("");
+  const [product, setProduct] = useState(initialdata);
+  // const [product, setProduct] = useState("");
   const [description, setDescription] = useState("");
-
-  console.log(user.name);
-  console.log(user.email);
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -43,6 +44,7 @@ function NewTicket() {
     return <Spinner />
   }
 
+
   return (
     <>
     <BackButton url="/" />
@@ -67,13 +69,35 @@ function NewTicket() {
             <select
               name="product"
               id="product"
-              value={product}
-              onChange={(e) => setProduct(e.target.value)}
+              value={product.phone || product.Laptop || product.TV}
+              onChange={(e)=>{
+                const selectedGroupLabel = e.target.options[e.target.selectedIndex].parentNode.label;
+                const selectedOptionValue = e.target.value;
+                setProduct({
+                  [selectedGroupLabel]:selectedOptionValue,
+                })
+                // console.log(product);
+              }}
             >
-              <option value="iPhone">iPhone</option>
-              <option value="Macbook Pro">Macbook Pro</option>
-              <option value="iMac">iMac</option>
-              <option value="iPad">iPad</option>
+              <optgroup label="phone">
+                <option value="iPhone">iPhone</option>
+                <option value="Macbook Pro">Macbook Pro</option>
+                <option value="iMac">iMac</option>
+                <option value="iPad">iPad</option>
+              </optgroup>
+              <optgroup label="Laptop">
+                <option value="MV3">MV3</option>
+                <option value="VFPro">VFPro</option>
+                <option value="JGuI">JGuI</option>
+                <option value="KO78">KO78</option>
+              </optgroup>
+              <optgroup label="TV">
+                <option value="HD70">HD70</option>
+                <option value="Dolby55">Dolby55</option>
+                <option value="Vison40">Vison40</option>
+                <option value="Meta50">Meta50</option>
+              </optgroup>
+              
             </select>
           </div>
           <div className="form-group">

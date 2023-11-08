@@ -24,6 +24,19 @@ const getTickets = async (token) => {
   };
 
   const response = await axios.get(API_URL, config);
+  // console.log(response.data);
+  return response.data;
+};
+
+// Get emp tickets
+const getEmpTickets = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios.get(API_URL+"emp/", config);
 
   return response.data;
 };
@@ -37,21 +50,45 @@ const getTicket = async (ticketId, token) => {
   };
 
   const response = await axios.get(API_URL + ticketId, config);
-
   return response.data;
 };
 
-// Close ticket
-const closeTicket = async (ticketId, token) => {
+const getEmpTicket = async (ticketId, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
+  const response = await axios.get(API_URL + "emp/"+ ticketId, config);
+  return response.data;
+};
 
+// Close ticket
+const closeEmpTicket = async (ticketId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  // console.log(stat);
   const response = await axios.put(
-    API_URL + ticketId,
+    API_URL+ "emp/" + ticketId,
     { status: "closed" },
+    config
+  );
+
+  return response.data;
+};
+const openEmpTicket = async (ticketId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  // console.log(stat);
+  const response = await axios.put(
+    API_URL+ "emp/" + ticketId,
+    { status: "open" },
     config
   );
 
@@ -62,7 +99,10 @@ const ticketService = {
   createTicket,
   getTickets,
   getTicket,
-  closeTicket,
+  openEmpTicket,
+  closeEmpTicket,
+  getEmpTickets,
+  getEmpTicket
 };
 
 export default ticketService;
